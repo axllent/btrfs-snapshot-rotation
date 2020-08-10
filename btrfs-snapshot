@@ -19,9 +19,8 @@ $scriptname: Take and rotate snapshots on a btrfs file system
  
   source:    path to make snaphost of
   target:    snapshot directory
-  snap_name: Base name for snapshots, to be appended to 
-             "date --iso-8601=seconds"
-  count:     Number of snapshots in the timestamp-@snap_name format to
+  snap_name: Base name for snapshots, to be appended to date & time
+  count:     Number of snapshots in the timestamp-snap_name format to
              keep at one time for a given snap_name. 
   [-q]:      Be quiet.
 
@@ -60,7 +59,7 @@ fi
 max_snap=$COUNT
 
 # Create new snapshot:
-cmd="btrfs subvolume snapshot -r $SOURCE $TARGET/$(date --iso-8601=seconds)-@${SNAP}"
+cmd="btrfs subvolume snapshot -r $SOURCE $TARGET/$(date +%F-%H%M)-${SNAP}"
 if [ -z "$QUIET" ]; then
 	echo "$cmd"
 	$cmd
@@ -69,7 +68,7 @@ else
 fi
 
 # Clean up older snapshots:
-for i in $(find "$TARGET" -maxdepth 1|sort |grep @"${SNAP}"\$|head -n -${max_snap}); do
+for i in $(find "$TARGET" -maxdepth 1|sort |grep "\-${SNAP}"\$|head -n -${max_snap}); do
 	cmd="btrfs subvolume delete $i"
 	if [ -z "$QUIET" ]; then
 		echo "$cmd"
