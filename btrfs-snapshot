@@ -16,12 +16,12 @@ $scriptname: Take and rotate snapshots on a btrfs file system
 
   Usage:
   $scriptname source target snap_name count [-q]
- 
+
   source:    path to make snaphost of
   target:    snapshot directory
   snap_name: Base name for snapshots, to be appended to date & time
   count:     Number of snapshots in the timestamp-snap_name format to
-             keep at one time for a given snap_name. 
+             keep at one time for a given snap_name.
   [-q]:      Be quiet.
 
 Example for crontab:
@@ -60,6 +60,11 @@ max_snap=$COUNT
 
 # Create new snapshot:
 cmd="btrfs subvolume snapshot -r $SOURCE $TARGET/$(date +%F-%H%M)-${SNAP}"
+
+if [ ! -d "$TARGET" ]; then
+	mkdir -p "$TARGET"
+fi
+
 if [ -z "$QUIET" ]; then
 	echo "$cmd"
 	$cmd
